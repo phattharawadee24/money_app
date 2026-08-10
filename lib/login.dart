@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'account_list.dart';
 import 'register.dart';
+import 'welcome.dart';
 import 'widgets/auth_header.dart';
 import 'widgets/custom_page_route.dart';
 import 'widgets/custom_text_field.dart';
@@ -50,7 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       Navigator.pushReplacement(
         context,
-        CustomPageRoute(child: const AccountListScreen()),
+        CustomPageRoute(child: const WelcomeScreen()),
       );
     }
   }

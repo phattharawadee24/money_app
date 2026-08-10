@@ -188,6 +188,31 @@ class _AccountDetailScreenState extends State<AccountDetailScreen> {
     );
   }
 
+  void _confirmDeleteTransaction(int index) {
+    showDialog<void>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('ยืนยันลบรายการ'),
+          content: const Text('คุณแน่ใจหรือไม่ว่าจะลบรายการนี้?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('ยกเลิก'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _deleteTransaction(index);
+              },
+              child: const Text('ลบ'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   String _formatMoney(double amount) {
     final text = amount.toStringAsFixed(2);
     return text.replaceAllMapped(
@@ -222,7 +247,7 @@ class _AccountDetailScreenState extends State<AccountDetailScreen> {
               borderRadius: BorderRadius.circular(18),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.06),
+                  color: const Color(0xFF000000).withValues(alpha: 0.06),
                   blurRadius: 12,
                   offset: const Offset(0, 6),
                 ),
@@ -284,15 +309,43 @@ class _AccountDetailScreenState extends State<AccountDetailScreen> {
                 : ListView.separated(
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                     itemCount: _transactions.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 12),
+                    separatorBuilder: (_, _) => const SizedBox(height: 12),
                     itemBuilder: (context, index) {
                       final transaction = _transactions[index];
+                      final dismissKey =
+                          '${transaction.date.toIso8601String()}|${transaction.description}|${transaction.amount}';
                       return Dismissible(
-                        key: ValueKey(
-                          transaction.date.toIso8601String() +
-                              transaction.description,
-                        ),
+                        key: ValueKey(dismissKey),
                         direction: DismissDirection.endToStart,
+                        confirmDismiss: (_) async {
+                          final result = await showDialog<bool>(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: const Text('ยืนยันลบรายการ'),
+                                content: const Text(
+                                  'คุณแน่ใจหรือไม่ว่าจะลบรายการนี้?',
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(false),
+                                    child: const Text('ยกเลิก'),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(true),
+                                    child: const Text('ลบ'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                          if (result == true) {
+                            _deleteTransaction(index);
+                          }
+                          return result == true;
+                        },
                         background: Container(
                           alignment: Alignment.centerRight,
                           padding: const EdgeInsets.only(right: 20),
@@ -305,14 +358,15 @@ class _AccountDetailScreenState extends State<AccountDetailScreen> {
                             color: Colors.white,
                           ),
                         ),
-                        onDismissed: (_) => _deleteTransaction(index),
                         child: Container(
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(16),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.04),
+                                color: const Color(
+                                  0xFF000000,
+                                ).withValues(alpha: 0.04),
                                 blurRadius: 10,
                                 offset: const Offset(0, 3),
                               ),
@@ -330,14 +384,29 @@ class _AccountDetailScreenState extends State<AccountDetailScreen> {
                               ),
                             ),
                             subtitle: Text(_formatDate(transaction.date)),
-                            trailing: Text(
-                              '${transaction.isIncome ? '+' : '-'}฿ ${_formatMoney(transaction.amount)}',
-                              style: TextStyle(
-                                color: transaction.isIncome
-                                    ? Colors.green.shade700
-                                    : Colors.red.shade700,
-                                fontWeight: FontWeight.w700,
-                              ),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  '${transaction.isIncome ? '+' : '-'}฿ ${_formatMoney(transaction.amount)}',
+                                  style: TextStyle(
+                                    color: transaction.isIncome
+                                        ? Colors.green.shade700
+                                        : Colors.red.shade700,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                IconButton(
+                                  onPressed: () =>
+                                      _confirmDeleteTransaction(index),
+                                  icon: const Icon(
+                                    Icons.delete_outline,
+                                    color: Colors.red,
+                                  ),
+                                  tooltip: 'ลบรายการ',
+                                ),
+                              ],
                             ),
                           ),
                         ),

@@ -1,13 +1,79 @@
 import 'package:flutter/material.dart';
+import 'account_list.dart';
+import 'login.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
+
+  void _logout(BuildContext context) {
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => const LoginScreen()),
+      (route) => false,
+    );
+  }
+
+  void _openAccountList(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const AccountListScreen()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('หน้าแรก'),
+        backgroundColor: const Color(0xFF6C63FF),
+        elevation: 0,
+      ),
+      drawer: Drawer(
+        child: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              DrawerHeader(
+                decoration: const BoxDecoration(color: Color(0xFF6C63FF)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    Text(
+                      'เมนูหลัก',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'เลือกหน้าเพื่อไปต่อ',
+                      style: TextStyle(color: Colors.white70),
+                    ),
+                  ],
+                ),
+              ),
+              ListTile(
+                leading: const Icon(Icons.account_balance_wallet_rounded),
+                title: const Text('รายการบัญชี'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _openAccountList(context);
+                },
+              ),
+              const Divider(height: 1),
+              ListTile(
+                leading: const Icon(Icons.logout_rounded),
+                title: const Text('ออกจากระบบ'),
+                onTap: () => _logout(context),
+              ),
+            ],
+          ),
+        ),
+      ),
       backgroundColor: const Color(0xFF6C63FF),
       body: SafeArea(
         child: Padding(
@@ -15,8 +81,6 @@ class WelcomeScreen extends StatelessWidget {
           child: Column(
             children: [
               SizedBox(height: screenHeight * 0.08),
-
-              // โลโก้ / ไอคอนแอป
               Container(
                 width: 140,
                 height: 140,
@@ -25,24 +89,21 @@ class WelcomeScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(28),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.15),
+                      color: const Color(0xFF000000).withValues(alpha: 0.15),
                       blurRadius: 20,
                       offset: const Offset(0, 10),
                     ),
                   ],
                 ),
                 child: const Icon(
-                  Icons.explore_rounded,
+                  Icons.account_balance_wallet_rounded,
                   size: 72,
                   color: Color(0xFF6C63FF),
                 ),
               ),
-
               SizedBox(height: screenHeight * 0.05),
-
-              // ชื่อแอป
               const Text(
-                'Navigation App',
+                'Money App',
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
@@ -50,12 +111,9 @@ class WelcomeScreen extends StatelessWidget {
                 ),
                 textAlign: TextAlign.center,
               ),
-
               const SizedBox(height: 12),
-
-              // คำบรรยาย
               const Text(
-                'ยินดีต้อนรับ! เริ่มต้นใช้งานแอปของเรา\nเพื่อสำรวจฟีเจอร์ทั้งหมดได้เลย',
+                'ยินดีต้อนรับ! นี่คือหน้าแรกหลังล็อกอิน คุณสามารถเลือกไปหน้ารายการบัญชีหรือออกจากระบบได้จากเมนูด้านบน',
                 style: TextStyle(
                   fontSize: 15,
                   color: Colors.white70,
@@ -63,10 +121,7 @@ class WelcomeScreen extends StatelessWidget {
                 ),
                 textAlign: TextAlign.center,
               ),
-
               const Spacer(),
-
-              // ปุ่มเริ่มต้นใช้งาน
               SizedBox(
                 width: double.infinity,
                 height: 52,
@@ -79,37 +134,21 @@ class WelcomeScreen extends StatelessWidget {
                     ),
                     elevation: 0,
                   ),
-                  onPressed: () {
-                    // TODO: แก้ให้ไปหน้าที่ต้องการ เช่น
-                    // Navigator.pushReplacement(
-                    //   context,
-                    //   MaterialPageRoute(builder: (_) => const HomeScreen()),
-                    // );
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('กดปุ่มเริ่มต้นใช้งานแล้ว!'),
-                      ),
-                    );
-                  },
+                  onPressed: () => _openAccountList(context),
                   child: const Text(
-                    'เริ่มต้นใช้งาน',
+                    'ไปยังรายการบัญชี',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                 ),
               ),
-
               const SizedBox(height: 16),
-
               TextButton(
-                onPressed: () {
-                  // TODO: ไปหน้า Login
-                },
+                onPressed: () => _logout(context),
                 child: const Text(
-                  'มีบัญชีอยู่แล้ว? เข้าสู่ระบบ',
+                  'ออกจากระบบ',
                   style: TextStyle(color: Colors.white),
                 ),
               ),
-
               SizedBox(height: screenHeight * 0.04),
             ],
           ),
