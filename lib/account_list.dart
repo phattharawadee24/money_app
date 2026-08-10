@@ -188,9 +188,7 @@ class AccountListScreen extends StatelessWidget {
                         fontSize: 15,
                       ),
                     ),
-                    onTap: () {
-                      // TODO: ไปหน้ารายละเอียดบัญชี
-                    },
+                    onTap: () {},
                   ),
                 );
               },
