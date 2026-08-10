@@ -100,7 +100,6 @@ class WelcomeScreen extends StatelessWidget {
 
               const SizedBox(height: 16),
 
-              // ลิงก์รอง เช่น "มีบัญชีอยู่แล้ว? เข้าสู่ระบบ"
               TextButton(
                 onPressed: () {
                   // TODO: ไปหน้า Login
