@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'account_list.dart';
 import 'login.dart';
+import 'transaction_history.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -17,6 +18,13 @@ class WelcomeScreen extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => const AccountListScreen()),
+    );
+  }
+
+  void _openTransactionHistory(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const TransactionHistoryScreen()),
     );
   }
 
@@ -62,6 +70,14 @@ class WelcomeScreen extends StatelessWidget {
                 onTap: () {
                   Navigator.pop(context);
                   _openAccountList(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.history_rounded),
+                title: const Text('ประวัติการทำรายการ'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _openTransactionHistory(context);
                 },
               ),
               const Divider(height: 1),
