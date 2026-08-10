@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'account_list.dart';
 import 'register.dart';
 import 'widgets/auth_header.dart';
 import 'widgets/custom_page_route.dart';
@@ -47,21 +48,9 @@ class _LoginScreenState extends State<LoginScreen> {
       if (!mounted) return;
       setState(() => _isLoading = false);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            children: const [
-              Icon(Icons.check_circle, color: Colors.white),
-              SizedBox(width: 12),
-              Text('Login Successful! Welcome back.'),
-            ],
-          ),
-          backgroundColor: const Color(0xFF10B981),
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
+      Navigator.pushReplacement(
+        context,
+        CustomPageRoute(child: const AccountListScreen()),
       );
     }
   }
@@ -72,9 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
         content: const Text('Password reset link sent to your email!'),
         backgroundColor: const Color(0xFF6366F1),
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
   }
@@ -106,7 +93,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         const AuthHeader(
                           icon: Icons.lock_outlined,
                           title: 'Welcome Back',
-                          subtitle: 'Enter your credentials to access your account',
+                          subtitle:
+                              'Enter your credentials to access your account',
                         ),
                         const SizedBox(height: 32),
 

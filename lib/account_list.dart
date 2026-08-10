@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'account_detail.dart';
 
 /// หน้ารายการบัญชี (Account List Screen)
 ///
@@ -133,7 +134,12 @@ class AccountListScreen extends StatelessWidget {
                 ),
                 TextButton.icon(
                   onPressed: () {
-                    // TODO: ไปหน้าเพิ่มบัญชีใหม่
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('ฟีเจอร์เพิ่มบัญชียังไม่พร้อมในขณะนี้'),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
                   },
                   icon: const Icon(Icons.add, size: 18),
                   label: const Text('เพิ่มบัญชี'),
@@ -188,7 +194,14 @@ class AccountListScreen extends StatelessWidget {
                         fontSize: 15,
                       ),
                     ),
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => AccountDetailScreen(account: account),
+                        ),
+                      );
+                    },
                   ),
                 );
               },
