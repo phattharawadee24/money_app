@@ -24,6 +24,87 @@ class AccountDetailScreen extends StatefulWidget {
   State<AccountDetailScreen> createState() => _AccountDetailScreenState();
 }
 
+class TransactionHistoryScreen extends StatelessWidget {
+  final List<TransactionRecord> transactions;
+  final String accountName;
+
+  const TransactionHistoryScreen({
+    super.key,
+    required this.transactions,
+    required this.accountName,
+  });
+
+  String _formatMoney(double amount) {
+    final text = amount.toStringAsFixed(2);
+    return text.replaceAllMapped(
+      RegExp(r'\B(?=(\d{3})+(?!\d))'),
+      (match) => ',',
+    );
+  }
+
+  String _formatDate(DateTime date) {
+    return '${date.day}/${date.month}/${date.year}';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('ประวัติรายการของ $accountName'),
+        backgroundColor: const Color(0xFF6C63FF),
+      ),
+      body: transactions.isEmpty
+          ? const Center(
+              child: Text(
+                'ยังไม่มีรายการในประวัติ',
+                style: TextStyle(color: Colors.black54),
+              ),
+            )
+          : ListView.separated(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+              itemCount: transactions.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              itemBuilder: (context, index) {
+                final transaction = transactions[index];
+                return Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF000000).withValues(alpha: 0.04),
+                        blurRadius: 10,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
+                    title: Text(
+                      transaction.description,
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    subtitle: Text(_formatDate(transaction.date)),
+                    trailing: Text(
+                      '${transaction.isIncome ? '+' : '-'}฿ ${_formatMoney(transaction.amount)}',
+                      style: TextStyle(
+                        color: transaction.isIncome
+                            ? Colors.green.shade700
+                            : Colors.red.shade700,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+    );
+  }
+}
+
 class _AccountDetailScreenState extends State<AccountDetailScreen> {
   final List<TransactionRecord> _transactions = [
     TransactionRecord(
@@ -213,6 +294,18 @@ class _AccountDetailScreenState extends State<AccountDetailScreen> {
     );
   }
 
+  void _openTransactionHistory() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => TransactionHistoryScreen(
+          accountName: widget.account.name,
+          transactions: List.from(_transactions),
+        ),
+      ),
+    );
+  }
+
   String _formatMoney(double amount) {
     final text = amount.toStringAsFixed(2);
     return text.replaceAllMapped(
@@ -279,20 +372,42 @@ class _AccountDetailScreenState extends State<AccountDetailScreen> {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const Text(
                   'บันทึกรายการ',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
-                ElevatedButton.icon(
-                  onPressed: _showAddTransactionDialog,
-                  icon: const Icon(Icons.add, size: 18),
-                  label: const Text('เพิ่มบันทึก'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF6C63FF),
-                  ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: _showAddTransactionDialog,
+                        icon: const Icon(Icons.add, size: 18),
+                        label: const Text('เพิ่มบันทึก'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF6C63FF),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: _openTransactionHistory,
+                        icon: const Icon(Icons.history, size: 18),
+                        label: const Text('ดูประวัติ'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: const Color(0xFF6C63FF),
+                          side: const BorderSide(color: Color(0xFF6C63FF)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
